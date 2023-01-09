@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./project:/app
+    command: >
+      sh -c "python3 manage.py migrate && 
+            python3 manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=blog_db 
+      - DB_USER=blog_user
+      - DB_PASSWORD=blogpassword
+    depends_on:
+      - db
+  
+  db:
+    image: postgres:14.6-alpine
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=blog_db
+      - POSTGRES_USER=blog_user
+      - POSTGRES_PASSWORD=blogpassword
+
+volumes:
+  dev-db-data:
