@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
     # project apps
     'chat_users',
+    'chat',
 
 ]
 
