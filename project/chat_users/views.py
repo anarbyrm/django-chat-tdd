@@ -91,12 +91,13 @@ def answer_friend_request(request, request_id):
                     request.user.friends.add(sender)
                     sender.friends.add(request.user)
                     friend_request.delete()
-                    return redirect('home')
+                    return redirect('accounts:requests')
                 elif status == 'D':
                     friend_request.delete()
-                    return redirect('home')
-    else:
-        return HttpResponseForbidden()
+                    return redirect('accounts:requests')
+            else:
+                return render(request, 'request_detail.html', {'form': form, 'request': friend_request})
+    return render(request, 'request_detail.html', {'form': form, 'request': friend_request})
 
 
 class FriendsListView(generic.TemplateView):
@@ -115,3 +116,4 @@ class RequestsListView(generic.TemplateView):
         context = super().get_context_data(**kwargs)
         context['requests'] = FriendRequest.objects.filter(receiver=self.request.user)
         return context
+

@@ -3,7 +3,10 @@
 
 {% block content %}
     {% for friend in friends %}
-        {{ friend.email }}
+        {{ friend.email }} <a href="">message</a>
+        {% if not forloop.last %}
+            <hr>
+        {% endif %}
     {% empty %}
         <h3>You don't have friends yet!</h3>
     {% endfor %}
