@@ -122,12 +122,13 @@ class FriendRequestViewTests(TestCase):
         self.assertNotIn(user2, user.friends.all())
         self.assertFalse(FriendRequest.objects.filter(id=friend_request.id).exists())
 
+    def test_if_user_request_list_can_be_seen(self):
+        url = reverse('accounts:requests')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
     def test_if_user_friend_list_can_be_seen(self):
         url = reverse('accounts:friends')
-        user = User.objects.get(id=int(self.client.session['_auth_user_id']))
-        user1 = User.objects.create_user(email='testing1@example.com', password='testing_123')
-        user2 = User.objects.create_user(email='testing2@example.com', password='testing_123')
-        user.friends.add(user1, user2)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 

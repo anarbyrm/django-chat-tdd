@@ -107,3 +107,11 @@ class FriendsListView(generic.TemplateView):
         context['friends'] = self.request.user.friends.all()
         return context
 
+
+class RequestsListView(generic.TemplateView):
+    template_name = 'requests_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['requests'] = FriendRequest.objects.filter(receiver=self.request.user)
+        return context

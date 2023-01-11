@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    {% for request in requests %}
+        <h3>{{ request.sender }} sent you a friend request!</h3>
+        <a href="">Accept</a>
+        <a href="">Decline</a>
+    {% empty %}
+        <h3>You don't have friends yet!</h3>
+    {% endfor %}
+{% endblock %}
