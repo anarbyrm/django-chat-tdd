@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
-from django.views import View
+from django.views import View, generic
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.views import LoginView
@@ -97,3 +97,13 @@ def answer_friend_request(request, request_id):
                     return redirect('home')
     else:
         return HttpResponseForbidden()
+
+
+class FriendsListView(generic.TemplateView):
+    template_name = 'friends_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['friends'] = self.request.user.friends.all()
+        return context
+

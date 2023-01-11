@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    {% for friend in friends %}
+        {{ friend.email }}
+    {% empty %}
+        <h3>You don't have friends yet!</h3>
+    {% endfor %}
+{% endblock %}

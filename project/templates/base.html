@@ -17,6 +17,9 @@
         <a href="{% url 'accounts:register' %}">Register</a>
         <a href="{% url 'accounts:login' %}">Login</a>
       {% else %}
+        <a href="{% url 'accounts:friends' %}">Friends</a>
+        <a href="{% url 'accounts:friends' %}">Messages</a>
+        <a href="{% url 'accounts:friends' %}">Notifications</a>
         <a href="{% url 'accounts:logout' %}">Logout</a>
       {% endif %}
     </nav>
