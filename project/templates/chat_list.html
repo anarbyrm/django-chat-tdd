@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <h2>Inbox</h2>
+    <hr>
+    <br>
+
+    {% for chat in chats %}
+        {% for receiver in chat.participants.all %}
+            {% if receiver != request.user %}
+                <a href="{% url 'chat' chat.id %}">Messaging with: {{ receiver }} | {{ chat.date_updated }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if not forloop.last %}
+            <hr>
+        {% endif %}
+    {% endfor %}
+
+{% endblock%}

@@ -11,6 +11,7 @@ from django.contrib.auth import logout
 
 from chat_users.forms import RegisterForm, FriendRequestForm
 from chat_users.models import FriendRequest
+from chat.models import Chat
 
 
 User = get_user_model
@@ -91,6 +92,8 @@ def answer_friend_request(request, request_id):
                     request.user.friends.add(sender)
                     sender.friends.add(request.user)
                     friend_request.delete()
+                    chat = Chat.objects.create()
+                    chat.participants.add(request.user, sender)
                     return redirect('accounts:requests')
                 elif status == 'D':
                     friend_request.delete()

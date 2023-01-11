@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <h2>Messaging with: </h2>
+    {% for participant in chat.participants.all %}
+        {% if participant != request.user %}
+            {{ participant.email }}
+        {% endif %}
+    {% endfor %}
+    <hr>
+    <br>
+    {% for message in chat.messages.all %}
+        <h4>{{ message.user }}</h4><p>{{ message.body }}</p><small>{{ message.date_sent }}</small>
+        {% if not forloop.last %}
+            <hr>
+        {% endif %}
+    {% endfor %}
+
+    <form method="post">{% csrf_token %}
+        {{ form }}
+        <input type="submit" value="send">
+    </form>
+{% endblock%}

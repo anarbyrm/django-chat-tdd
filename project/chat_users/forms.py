@@ -7,7 +7,6 @@ from chat_users.models import FriendRequest
 User = get_user_model()
 
 
-
 class RegisterForm(UserCreationForm):
 
     class Meta:
@@ -15,9 +14,7 @@ class RegisterForm(UserCreationForm):
         fields = ['email', 'password1', 'password2']
 
 
-
 class FriendRequestForm(forms.ModelForm):
     class Meta:
         model = FriendRequest
         fields = ['status']
-
