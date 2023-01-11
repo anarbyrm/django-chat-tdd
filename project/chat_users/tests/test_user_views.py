@@ -1,11 +1,18 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.http import request
-from chat_users.models import User
+from chat_users.models import User, FriendRequest
 
 
 REGISTER_URL = reverse('accounts:register')
 LOGIN_URL = reverse('accounts:login')
+
+
+def request_detail(request_id):
+    return reverse('accounts:request-detail', args=[request_id])
+
+
+def add_friend_url(user_id):
+    return reverse('accounts:send-request', args=[user_id])
 
 
 class PublicUserViewsTests(TestCase):
@@ -68,3 +75,49 @@ class PrivateUserTests(TestCase):
         r2 = self.client.get(LOGIN_URL)
         self.assertNotEqual(r1.status_code, 200)
         self.assertNotEqual(r2.status_code, 200)
+
+
+class FriendRequestViewTests(TestCase):
+    def setUp(self):
+        user = User.objects.create_user(email='test@example.com', password='testing_123')
+        self.client.force_login(user=user)
+
+    def test_if_friend_request_can_be_sent(self):
+        user = User.objects.create_user(email='testfriend@example.com', password='testing_123')
+        url = add_friend_url(user.id)
+        response = self.client.get(url)
+        sender = User.objects.get(id=int(self.client.session['_auth_user_id']))
+        count = FriendRequest.objects.count()
+        request = FriendRequest.objects.first()
+
+        self.assertEqual(count, 1)
+        self.assertEqual(request.sender, sender)
+        self.assertEqual(request.receiver, user)
+
+    def test_if_user_can_accept_request(self):
+        user = User.objects.get(id=int(self.client.session['_auth_user_id']))
+        user2 = User.objects.create_user(email='testingafaf@example.com', password='testing_123')
+        friend_request = FriendRequest.objects.create(
+            sender=user2,
+            receiver=user
+        )
+        url = request_detail(friend_request.id)
+        response = self.client.post(url, {'status': 'A'})
+
+        self.assertIn(user, user2.friends.all())
+        self.assertIn(user2, user.friends.all())
+        self.assertFalse(FriendRequest.objects.filter(id=friend_request.id).exists())
+
+    def test_if_user_can_decline_request(self):
+        user = User.objects.get(id=int(self.client.session['_auth_user_id']))
+        user2 = User.objects.create_user(email='testingafaf@example.com', password='testing_123')
+        friend_request = FriendRequest.objects.create(
+            sender=user2,
+            receiver=user
+        )
+        url = request_detail(friend_request.id)
+        response = self.client.post(url, {'status': 'D'})
+
+        self.assertNotIn(user, user2.friends.all())
+        self.assertNotIn(user2, user.friends.all())
+        self.assertFalse(FriendRequest.objects.filter(id=friend_request.id).exists())
