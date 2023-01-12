@@ -13,6 +13,5 @@ urlpatterns = [
     path('requests/', views.RequestsListView.as_view(), name='requests'),
     path('requests/<int:request_id>/', views.answer_friend_request, name='request-detail'),
     path('friends/', views.FriendsListView.as_view(), name='friends'),
-
     
 ]

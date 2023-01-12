@@ -132,3 +132,6 @@ class FriendRequestViewTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+    def test_if_user_can_delete_friend(self):
+        pass
+

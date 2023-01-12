@@ -8,8 +8,19 @@ from chat.forms import MessageForm
 User = get_user_model()
 
 
-class HomeView(TemplateView):
-    template_name = 'home.html'
+class HomeView(View):
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        query = request.GET.get('user-search', None)
+        if query:
+            user = User.objects.filter(email=query)
+            if user.exists():
+                context['search'] = user.first()
+                return render(request, 'home.html', context)
+            elif not user.exists():
+                context['no_user'] = 'No user with this email'
+
+        return render(request, 'home.html', context)
 
 
 class InboxView(View):

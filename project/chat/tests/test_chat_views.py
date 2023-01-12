@@ -45,6 +45,16 @@ class MessagingTests(TestCase):
         self.assertEqual(earliest_message_count+1, latest_message_count)
 
 
+class UserSearchTest(TestCase):
+    def test_if_user_can_be_find_with_exact_email(self):
+        email = 'testing@example.com'
+        User.objects.create_user(email=email, password='testing_123')
+        url = reverse('home')
+        response = self.client.get(url, {'user-search': email})
+        self.assertEqual(response.status_code, 200)
+
+
+
 
 
 
