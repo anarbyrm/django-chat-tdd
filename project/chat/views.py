@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.views.generic import TemplateView, View, ListView
 from django.contrib.auth import get_user_model
+from django.http import HttpResponseBadRequest
 
 from chat.models import Chat, Message
 from chat.forms import MessageForm
@@ -34,9 +35,14 @@ class InboxView(View):
 
     def post(self, request, chat_id, *args, **kwargs):
         chat = get_object_or_404(Chat, id=chat_id)
-
+        participants_list = list(chat.participants.all())
+        participants_list.remove(request.user)
+        receiver = participants_list[0]
         context = dict(chat=chat)
         form = MessageForm(request.POST)
+        if request.user not in receiver.friends.all():
+            return HttpResponseBadRequest()
+
         if form.is_valid():
             message_instance = form.save(commit=False)
             message_instance.user = request.user

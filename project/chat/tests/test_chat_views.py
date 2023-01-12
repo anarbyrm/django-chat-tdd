@@ -35,6 +35,8 @@ class MessagingTests(TestCase):
             password='testing_123'
         )
         user = User.objects.get(id=int(self.client.session['_auth_user_id']))
+        user.friends.add(receiver)
+        receiver.friends.add(user)
         chat = Chat.objects.create()
         chat.participants.add(receiver, user)
         url = chat_detail(chat.id)
