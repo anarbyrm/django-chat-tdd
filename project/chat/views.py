@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 
 from chat.models import Chat, Message
 from chat.forms import MessageForm
+from chat_users.models import FriendRequest
 
 User = get_user_model()
 

@@ -2,6 +2,15 @@
 
 
 {% block content %}
+    <div class="alert alert-{{ message.tags }}">
+
+    </div>
+    {% if messages %}
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    {% endif %}
+
     <div class="container-fluid mt-3">
         <div class="row">
         <div class="col">
@@ -19,10 +28,16 @@
 
             {% if search %}
                 {{ search.email }}
-                {% if search in request.user.friends.all %}
-                    (Friend)
+                {% if search in user.friends.all %}
+                    <input class="btn btn-disabled" type="button" value="(Friend)">
                 {% else %}
-                    (Add friend)
+                    {% if search in user.request_sent_list.all %}
+                        <input class="btn btn-disabled" type="button" value="(Request sent)">
+                    {% else %}
+                        <form method="post" action="{% url 'accounts:send-request' search.id %}">{% csrf_token %}
+                            <input class="btn btn-success" type="submit" value="Add friend">
+                        </form>
+                    {% endif %}
                 {% endif %}
             {% else %}
                 {{ no_user }}

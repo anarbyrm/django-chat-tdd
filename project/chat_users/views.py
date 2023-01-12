@@ -64,16 +64,21 @@ class UserLogoutView(LoginRequiredMixin, View):
 def send_friend_request(request, user_id):
     receiver = get_object_or_404(get_user_model(), id=user_id)
     if request.user not in receiver.friends.all():
-        if request.user != receiver:
-            friend_request = FriendRequest(
-                sender=request.user,
-                receiver=receiver,
-            )
-            friend_request.save()
-            messages.success(request, "Your friend request has been sent successfully!")
-            return redirect('home')
+        if not FriendRequest.objects.filter(sender=request.user, receiver=receiver).exists():
+            if request.user != receiver:
+                friend_request = FriendRequest(
+                    sender=request.user,
+                    receiver=receiver,
+                )
+                friend_request.save()
+                request.user.request_sent_list.add(receiver)
+                messages.success(request, "Your friend request has been sent successfully!")
+                return redirect('home')
+            else:
+                return HttpResponseBadRequest()
         else:
-            return HttpResponseBadRequest()
+            messages.error(request, 'You have already sent the request. Please, wait for the response.')
+            return redirect('home')
     else:
         return HttpResponseBadRequest()
 
@@ -92,11 +97,13 @@ def answer_friend_request(request, request_id):
                     request.user.friends.add(sender)
                     sender.friends.add(request.user)
                     friend_request.delete()
+                    sender.request_sent_list.remove(request.user)
                     chat = Chat.objects.create()
                     chat.participants.add(request.user, sender)
                     return redirect('accounts:requests')
                 elif status == 'D':
                     friend_request.delete()
+                    sender.request_sent_list.remove(request.user)
                     return redirect('accounts:requests')
             else:
                 return render(request, 'request_detail.html', {'form': form, 'request': friend_request})
@@ -109,6 +116,8 @@ class FriendsListView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['friends'] = self.request.user.friends.all()
+        chats = Chat.objects.filter(participants__in=[self.request.user])
+        context['chats'] = chats
         return context
 
 

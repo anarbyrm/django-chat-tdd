@@ -3,7 +3,13 @@
 
 {% block content %}
     {% for friend in friends %}
-        {{ friend.email }} <a href="">message</a>
+        {% if chats %}
+            {% for chat in chats %}
+                {% if friend in chat.participants.all %}
+                    {{ friend.email }} <a href="{% url 'chat' chat.id %}">message</a>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
         {% if not forloop.last %}
             <hr>
         {% endif %}

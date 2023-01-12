@@ -36,7 +36,8 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
-    friends = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
+    friends = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='+')
+    request_sent_list = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
