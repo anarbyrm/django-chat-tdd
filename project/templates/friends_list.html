@@ -2,11 +2,20 @@
 
 
 {% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
     {% for friend in friends %}
         {% if chats %}
             {% for chat in chats %}
                 {% if friend in chat.participants.all %}
                     {{ friend.email }} <a href="{% url 'chat' chat.id %}">message</a>
+                    <a href="{% url 'accounts:delete-friend' friend.id %}">remove friend</a>
                 {% endif %}
             {% endfor %}
         {% endif %}

@@ -2,12 +2,12 @@
 
 
 {% block content %}
-    <div class="alert alert-{{ message.tags }}">
-
-    </div>
+    
     {% if messages %}
         {% for message in messages %}
-            {{ message }}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
         {% endfor %}
     {% endif %}
 
