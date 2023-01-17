@@ -133,5 +133,13 @@ class FriendRequestViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_if_user_can_delete_friend(self):
-        pass
+        user = User.objects.create_user(email='user@example.com', password='testing_123')
+        main_user = User.objects.get(email='test@example.com')
+        main_user.friends.add(user)
+        user.friends.add(main_user)
+        url = reverse('accounts:delete-friend',args=[user.id])
+        response = self.client.get(url)
+        self.assertFalse(user in main_user.friends.all())
+        self.assertFalse(main_user in user.friends.all())
+
 

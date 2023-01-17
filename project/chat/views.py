@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.views.generic import TemplateView, View, ListView
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseBadRequest
 
 from chat.models import Chat, Message
@@ -25,7 +26,7 @@ class HomeView(View):
         return render(request, 'home.html', context)
 
 
-class InboxView(View):
+class InboxView(LoginRequiredMixin, View):
     def get(self, request, chat_id, *args, **kwargs):
         chat = get_object_or_404(Chat, id=chat_id)
         context = dict(chat=chat)
@@ -54,7 +55,7 @@ class InboxView(View):
         return render(request, 'chat.html', context)
 
 
-class ChatListView(ListView):
+class ChatListView(LoginRequiredMixin, ListView):
     template_name = 'chat_list.html'
     model = Chat
     context_object_name = 'chats'

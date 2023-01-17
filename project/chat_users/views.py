@@ -14,7 +14,7 @@ from chat_users.models import FriendRequest
 from chat.models import Chat
 
 
-User = get_user_model
+User = get_user_model()
 
 class RegisterView(View):
 
@@ -110,7 +110,7 @@ def answer_friend_request(request, request_id):
     return render(request, 'request_detail.html', {'form': form, 'request': friend_request})
 
 
-class FriendsListView(generic.TemplateView):
+class FriendsListView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'friends_list.html'
 
     def get_context_data(self, **kwargs):
@@ -121,11 +121,20 @@ class FriendsListView(generic.TemplateView):
         return context
 
 
-class RequestsListView(generic.TemplateView):
+class RequestsListView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'requests_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['requests'] = FriendRequest.objects.filter(receiver=self.request.user)
         return context
+
+
+@login_required
+def delete_friend(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    request.user.friends.remove(user)
+    user.friends.remove(request.user)
+    messages.success(request, f'{user.email} is removed from your friendlist.')
+    return redirect(reverse('accounts:friends'))
 
